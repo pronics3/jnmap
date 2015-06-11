@@ -8,9 +8,27 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="com.jineng.map.MainActivity" >
 
-    <com.baidu.mapapi.map.MapView
-        android:id="@+id/bdmapView"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"/>
+   <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical" >
+
+        <com.baidu.mapapi.map.MapView
+            android:id="@+id/bmapView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:clickable="true" />
+
+        <ToggleButton
+            android:id="@+id/add_pin"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="10dip"
+            android:text="标注" />
+
+
+    </RelativeLayout>
 
 </RelativeLayout>
