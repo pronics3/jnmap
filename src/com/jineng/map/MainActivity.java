@@ -59,21 +59,31 @@ public class MainActivity extends Activity {
              /*Vendor v = (Vendor)msg.obj;
              Toast.makeText(MainActivity.this, v.getAddress(), 1000).show();*/
              switch(msg.what){
-             case MainActivity.LOAD_POIS:
+             case JinengMessage.LOAD_POIS:
 	             {
 	            	 List<Vendor> vendors = (List<Vendor>)msg.obj;
 	            	 
 	            	 loadPois(vendors);
 	             }
             	 break;
+             case JinengMessage.UPDATE_POI:
+             {
+            	 
+            	 Vendor v = (Vendor)msg.obj;
+                 Toast.makeText(MainActivity.this, v.getTitle(), 1000).show();
+            	 
              }
+        	 break;
+            	 
+             }
+             
          }  
 	};
 	
 	/*
 	 * Message what definition
 	 */
-	static final int LOAD_POIS = 1;
+	
 	
 	//private Marker markerA;
 	BitmapDescriptor bd = BitmapDescriptorFactory
@@ -86,15 +96,18 @@ public class MainActivity extends Activity {
 				
 				Message m = new Message();
 				m.obj = vendors;
-				m.what = MainActivity.LOAD_POIS;
+				m.what = JinengMessage.LOAD_POIS;
 				handler.sendMessage(m);
 				
-				/*Vendor v = new Vendor();
-				v.setId(940157744);
-				v.setLatitude(40.043131);
-				v.setLongitude(116.321984);
+				Vendor v = vendors.get(0); 
+				
 				v.setTitle("niubility");
-				LbsCloudService.DeleteVendor(v);*/
+				LbsCloudService.UpdateVendor(v);
+				
+				Message m2 = new Message();
+				m2.obj = v;
+				m2.what = JinengMessage.UPDATE_POI;
+				handler.sendMessage(m2);
 			}
 		});
 		thread.start();
