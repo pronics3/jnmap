@@ -1,5 +1,7 @@
 package com.jineng.map;
 
+import java.util.List;
+
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
@@ -38,7 +40,7 @@ public class MainActivity extends Activity {
 		
 		baiduMap = mapView.getMap();
 		
-		initOverlay();
+		beginLoadPois();
 		
 		btnAddPin = (ToggleButton)findViewById(R.id.add_pin);
 		btnAddPin.setOnCheckedChangeListener( new OnCheckedChangeListener(){
@@ -50,45 +52,68 @@ public class MainActivity extends Activity {
 		});
 	}
 	
-	private Handler messageHandler = new Handler(){
+	private Handler handler = new Handler(){
 		 public void handleMessage(Message msg)  
          {  
              super.handleMessage(msg);  
-             Vendor v = (Vendor)msg.obj;
-             Toast.makeText(MainActivity.this, v.getAddress(), 1000).show();
+             /*Vendor v = (Vendor)msg.obj;
+             Toast.makeText(MainActivity.this, v.getAddress(), 1000).show();*/
+             switch(msg.what){
+             case MainActivity.LOAD_POIS:
+	             {
+	            	 List<Vendor> vendors = (List<Vendor>)msg.obj;
+	            	 
+	            	 loadPois(vendors);
+	             }
+            	 break;
+             }
          }  
 	};
 	
-	private Marker markerA;
-	BitmapDescriptor bdA = BitmapDescriptorFactory
+	/*
+	 * Message what definition
+	 */
+	static final int LOAD_POIS = 1;
+	
+	//private Marker markerA;
+	BitmapDescriptor bd = BitmapDescriptorFactory
 			.fromResource(R.drawable.icon_marka);
-	private void initOverlay(){
-		
+	private void beginLoadPois(){
 		Thread thread = new Thread(new Runnable(){
-
 			@Override
 			public void run() {
+				List<Vendor> vendors = LbsCloudService.findAllVendors();
 				
-				Vendor v = LbsCloudService.findVendor(933424604);
+				Message m = new Message();
+				m.obj = vendors;
+				m.what = MainActivity.LOAD_POIS;
+				handler.sendMessage(m);
 				
-				Message message = new Message();
-				message.obj = v;
-				messageHandler.sendMessage( message);
+				/*Vendor v = new Vendor();
+				v.setLatitude(40.043131);
+				v.setLongitude(116.321984);
+				v.setTitle("niubility");
+				
+				LbsCloudService.CreateVendor(v);*/
 			}
-			
 		});
 		thread.start();
+	}
+	
+	private void loadPois(List<Vendor> vendors){
+		for(Vendor v: vendors){
+			createMarker(v);
+		}
+	}
+	
+	private Marker createMarker(Vendor v){
 		
-			
-			
-			LatLng llA = new LatLng(39.963175, 116.400244);
-			
+		LatLng ll = new LatLng(v.getLatitude(), v.getLongitude());
 		
-			OverlayOptions ooA = new MarkerOptions().position(llA).icon(bdA)
-					.zIndex(9);
-			markerA = (Marker) (baiduMap.addOverlay(ooA));
+		OverlayOptions o = new MarkerOptions().position(ll).icon(bd)
+				.zIndex(9);
 		
-		
+		return (Marker)(baiduMap.addOverlay(o));
 	}
 
 	@Override
