@@ -90,11 +90,11 @@ public class MainActivity extends Activity {
 				handler.sendMessage(m);
 				
 				/*Vendor v = new Vendor();
+				v.setId(940157744);
 				v.setLatitude(40.043131);
 				v.setLongitude(116.321984);
 				v.setTitle("niubility");
-				
-				LbsCloudService.CreateVendor(v);*/
+				LbsCloudService.DeleteVendor(v);*/
 			}
 		});
 		thread.start();
