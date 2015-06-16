@@ -91,7 +91,8 @@ public class LbsCloudService {
 				"price:"+v.getPrice(),
 				"contactor:" + (v.getContactor()!=null?v.getContactor():" "),
 				"mobile:"+(v.getMobile()!=null?v.getMobile():" "),
-				"memo:"+(v.getMemo()!=null?v.getMemo():" ")
+				"memo:"+(v.getMemo()!=null?v.getMemo():" "),
+				"startDate:"+(v.getStartDate()!=null?v.getStartDate():" ")
 				);
 		
 		if (s != null) {
@@ -125,7 +126,8 @@ public class LbsCloudService {
 				"price:"+v.getPrice(),
 				"contactor:" + (v.getContactor()!=null?v.getContactor():" "),
 				"mobile:"+(v.getMobile()!=null?v.getMobile():" "),
-				"memo:"+(v.getMemo()!=null?v.getMemo():" ")
+				"memo:"+(v.getMemo()!=null?v.getMemo():" "),
+				"startDate:"+(v.getStartDate()!=null?v.getStartDate():" ")
 				);
 		
 		if (s != null) {
