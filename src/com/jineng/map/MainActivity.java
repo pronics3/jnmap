@@ -99,15 +99,15 @@ public class MainActivity extends Activity {
 				m.what = JinengMessage.LOAD_POIS;
 				handler.sendMessage(m);
 				
+				/*
 				Vendor v = vendors.get(0); 
-				
 				v.setTitle("niubility");
 				LbsCloudService.UpdateVendor(v);
 				
 				Message m2 = new Message();
 				m2.obj = v;
 				m2.what = JinengMessage.UPDATE_POI;
-				handler.sendMessage(m2);
+				handler.sendMessage(m2);*/
 			}
 		});
 		thread.start();
