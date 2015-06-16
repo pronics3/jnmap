@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.CompoundButton;
@@ -13,12 +14,19 @@ import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.Toast;
 import android.widget.ToggleButton;
 
+import com.baidu.location.BDLocation;
+import com.baidu.location.BDLocationListener;
+import com.baidu.location.LocationClient;
+import com.baidu.location.LocationClientOption;
 import com.baidu.mapapi.map.BaiduMap;
 import com.baidu.mapapi.map.BitmapDescriptor;
 import com.baidu.mapapi.map.BitmapDescriptorFactory;
+import com.baidu.mapapi.map.MapStatusUpdate;
+import com.baidu.mapapi.map.MapStatusUpdateFactory;
 import com.baidu.mapapi.map.MapView;
 import com.baidu.mapapi.map.Marker;
 import com.baidu.mapapi.map.MarkerOptions;
+import com.baidu.mapapi.map.MyLocationData;
 import com.baidu.mapapi.map.OverlayOptions;
 import com.baidu.mapapi.model.LatLng;
 import com.jineng.data.LbsCloudService;
@@ -30,6 +38,8 @@ public class MainActivity extends Activity {
 	BaiduMap baiduMap;
 	boolean addPinMode = false;
 	
+	LocationClient locClient;
+	private MyLocationListener locationListen = new MyLocationListener();
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -39,6 +49,7 @@ public class MainActivity extends Activity {
 		mapView = (MapView)findViewById(R.id.bmapView);
 		
 		baiduMap = mapView.getMap();
+		baiduMap.setMyLocationEnabled(true);
 		
 		beginLoadPois();
 		
@@ -50,6 +61,16 @@ public class MainActivity extends Activity {
 			}
 			
 		});
+		
+		locClient = new LocationClient(this);
+		locClient.registerLocationListener(locationListen);
+		LocationClientOption option = new LocationClientOption();
+		option.setOpenGps(true);// 打开gps
+		option.setCoorType("bd09ll"); // 设置坐标类型
+		option.setScanSpan(1000);
+		
+		locClient.setLocOption(option);
+		locClient.start();
 	}
 	
 	private Handler handler = new Handler(){
@@ -129,11 +150,43 @@ public class MainActivity extends Activity {
 		return (Marker)(baiduMap.addOverlay(o));
 	}
 
+	boolean firstLoc = true;
+	public class MyLocationListener implements BDLocationListener {
+
+		@Override
+		public void onReceiveLocation(BDLocation location) {
+			Log.e("............", String.format("%f",location.getLatitude()));
+			// map view 销毁后不在处理新接收的位置
+			if (location == null || mapView == null)
+				return;
+			MyLocationData locData = new MyLocationData.Builder()
+					.accuracy(location.getRadius())
+					// 此处设置开发者获取到的方向信息，顺时针0-360
+					.direction(100).latitude(location.getLatitude())
+					.longitude(location.getLongitude()).build();
+			baiduMap.setMyLocationData(locData);
+			if (firstLoc) {
+				firstLoc = false;
+				LatLng ll = new LatLng(location.getLatitude(),
+						location.getLongitude());
+				MapStatusUpdate u = MapStatusUpdateFactory.newLatLng(ll);
+				baiduMap.animateMapStatus(u);
+			}
+		}
+
+		public void onReceivePoi(BDLocation poiLocation) {
+		}
+	}
+	
 	@Override
 	public void onDestroy(){
+		// 退出时销毁定位
+		locClient.stop();
+		// 关闭定位图层
+		baiduMap.setMyLocationEnabled(false);
+		mapView.onDestroy();
+		mapView = null;
 		super.onDestroy();  
-        //在activity执行onDestroy时执行mMapView.onDestroy()，实现地图生命周期管理  
-        mapView.onDestroy(); 
 	}
 	
 	@Override
