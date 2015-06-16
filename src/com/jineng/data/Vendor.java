@@ -1,6 +1,10 @@
 package com.jineng.data;
 
-public class Vendor {
+import java.io.Serializable;
+
+public class Vendor implements Serializable{
+	private static final long serialVersionUID = -298421382771663989L;
+
 	private long id;
 
 	private String title;

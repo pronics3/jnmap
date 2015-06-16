@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
@@ -18,6 +19,26 @@ public class LbsCloudService {
 	public static String UPDATE_POI = "http://api.map.baidu.com/geodata/v3/poi/update";
 	public static String DELETE_POI = "http://api.map.baidu.com/geodata/v3/poi/delete";
 
+	private static Vendor getVendorFromJson(JSONObject poi) throws JSONException{
+		
+		Vendor v = new Vendor();
+		
+		
+		JSONArray location = poi.getJSONArray("location");
+		v.setId(poi.getLong("id"));
+		v.setLongitude(location.getDouble(0));
+		v.setLatitude(location.getDouble(1));
+		v.setAddress(poi.getString("address"));
+		v.setContactor(poi.getString("contactor"));
+		v.setMemo(poi.getString("memo"));
+		v.setMobile(poi.getString("mobile"));
+		v.setPrice(poi.getDouble("price"));
+		v.setQuantity(poi.getDouble("quantity"));
+		v.setStartDate(poi.getString("startDate"));
+		v.setTitle(poi.getString("title"));
+		
+		return v;
+	}
 	public static Vendor findVendor(long id) {
 
 		String s = HttpUtil.getRequest(QUERY_POI, "ak:" + AK, 
@@ -30,12 +51,7 @@ public class LbsCloudService {
 
 				int status = obj.getInt("status");
 				if (status == 0) {
-					JSONObject poi = obj.getJSONObject("poi");
-					Vendor v = new Vendor();
-					JSONArray location = poi.getJSONArray("location");
-					v.setLongitude(location.getDouble(0));
-					v.setLatitude(location.getDouble(1));
-					v.setAddress(poi.getString("address"));
+					Vendor v = getVendorFromJson(obj.getJSONObject("poi"));
 					return v;
 				}
 
@@ -61,12 +77,7 @@ public class LbsCloudService {
 
 					for (int i = 0; i < pois.length(); i++) {
 						JSONObject poi = pois.getJSONObject(i);
-						Vendor v = new Vendor();
-						v.setId(poi.getLong("id"));
-						JSONArray location = poi.getJSONArray("location");
-						v.setLongitude(location.getDouble(0));
-						v.setLatitude(location.getDouble(1));
-						v.setAddress(poi.getString("address"));
+						Vendor v = getVendorFromJson(poi);
 						vendors.add(v);
 					}
 				}
